@@ -1,15 +1,31 @@
 from bs4 import BeautifulSoup
+from selenium import webdriver
 import requests
 import json
+import time
 import itemPageScrape
 
-source = requests.get('https://www.kickstarter.com/discover/categories/technology').text
+from selenium.webdriver.common.keys import Keys
 
-soup = BeautifulSoup(source, 'lxml')
+from selenium.webdriver.common.action_chains import ActionChains
 
-# print(soup.prettify())
+MAIN_URL = 'https://www.kickstarter.com/discover/categories/technology'
 
-cards = soup.find_all(class_='js-react-proj-card grid-col-12 grid-col-6-sm grid-col-4-lg')
+driver = webdriver.Safari()
+driver.get(MAIN_URL)
+
+
+button_class = driver.find_element_by_class_name('load_more.mt3').click()
+# load_more_button = driver.find_element_by_xpath('//*[@id="text"]')
+# load_more_button.click()
+# load_more_button.click()
+# kkk = driver.page_source
+
+# source = requests.get(MAIN_URL).text
+soup = BeautifulSoup(driver.page_source, 'lxml')
+
+cards = soup.find_all(
+    class_='js-react-proj-card grid-col-12 grid-col-6-sm grid-col-4-lg')
 
 for card in cards:
     data_project = json.loads(card['data-project'])
@@ -17,34 +33,5 @@ for card in cards:
 
     itemPageScrape.crawlPage(project_url, True)
 
-
-
-
-
-
-# print(cards.prettify().split("\"project\":\"")[1].split("\"")[0])
-# s = cards.split(',"rewards":')[0].split('"urls":{"web":{"project":')
-
-# k1 = cards.split('data-project=')
-
-# data_project = cards.split('data-project=\'')[1].split(' data-ref=')[0]
-# print(data_project)
-
-# cards = soup.find_all('div', {'class': 'js-react-proj-card grid-col-12 grid-col-6-sm grid-col-4-lg'})
-# print(cards.prettify())
-
-
-
-
-
-
-
-
-# print(cards[0])
-# for card in cards:
-#     links = card.findChildren("a" , recursive=True)
-#     print(links)
-
-# print(cards)
 
 # infoText = soup.findAll("table", {"class": "the class"})
