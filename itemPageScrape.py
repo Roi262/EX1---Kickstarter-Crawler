@@ -10,6 +10,19 @@ fields = {"creator": "",
           "daysToGo": "",
           "allOrNothing": False}
 
+def reset_fields():
+    fields["creator"] = ""
+    fields["title"] = ""
+    fields["text"] = ""
+    fields["dollarsPledged"] = ""
+    fields["dollarsGoal"] = ""
+    fields["numBackers"] = ""
+    fields["daysToGo"] = ""
+    fields["allOrNothing"] = False
+
+def fix_currency(data):
+    return data.replace("\\xe2\\x82\\xac", "€").replace("\\xc2\\xa", "£")
+
 class MyHTMLParser(HTMLParser):
     # Initializing lists
     lsStartTags = list()
@@ -47,9 +60,9 @@ class MyHTMLParser(HTMLParser):
             return
 
         if self.lookingFor == "dollarsPledged":
-            fields["dollarsPledged"] = data.replace("\\xe2\\x82\\xac", "€")
+            fields["dollarsPledged"] = fix_currency(data)
         elif self.lookingFor == "dollarsGoal":
-            fields["dollarsGoal"] = data.replace("\\xe2\\x82\\xac", "€")
+            fields["dollarsGoal"] = fix_currency(data)
         elif self.lookingFor == "backers":
             fields["numBackers"] = data
         elif self.lookingFor == "creator":
@@ -59,11 +72,9 @@ class MyHTMLParser(HTMLParser):
         self.lookingFor = ""
 
 
-def crawlPage(url, prnt):
+def crawlPage(url):
+    reset_fields()
     parser = MyHTMLParser()
-    html_page = html_page = urllib2.urlopen(url)
+    html_page = urllib2.urlopen(url)
     parser.feed(str(html_page.read()))
-    if prnt:
-        for i in fields:
-            print(i, "=", fields[i])
     return fields
