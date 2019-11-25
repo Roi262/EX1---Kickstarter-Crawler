@@ -1,40 +1,36 @@
-from bs4 import BeautifulSoup
 from selenium import webdriver
-import requests
+from selenium.webdriver.chrome.options import Options
 import json
+import math
 import time
-# from time import sleep
 import itemPageScrape
 
-from selenium.webdriver.common.keys import Keys
+CARDS_PER_PAGE = 12
+TOTAL_CARDS_TO_COUNT = 300
+LOAD_MORE_COUNT = math.ceil(TOTAL_CARDS_TO_COUNT/CARDS_PER_PAGE)
 
-from selenium.webdriver.common.action_chains import ActionChains
+# Initializing Google Chrome Webdriver
+chrome_options = Options()
+chrome_options.add_argument("--incognito")
+chrome_options.add_argument("--window-size=1920x1080")
+driver = webdriver.Chrome(chrome_options=chrome_options, executable_path='chromedriver')
 
-MAIN_URL = 'https://www.kickstarter.com/discover/categories/technology'
-
-driver = webdriver.Safari()
-driver.get(MAIN_URL)
-for i in range(10):
-    driver.find_element_by_class_name('load_more.mt3').click()
-soup = BeautifulSoup(driver.page_source, 'lxml')
+# Instatiating driver with kickstarter url
+url = 'https://www.kickstarter.com/discover/categories/technology'
+driver.get(url)
+time.sleep(2)
 
 
-# load_more_button = driver.find_element_by_xpath('//*[@id="text"]')
-# load_more_button.click()
-# load_more_button.click()
-# k = driver.page_source
-
-# source = requests.get(MAIN_URL).text
-
-cards = soup.find_all(
-    class_='js-react-proj-card grid-col-12 grid-col-6-sm grid-col-4-lg')
-
-for card in cards:
-    data_project = json.loads(card['data-project'])
-    project_url = data_project['urls']['web']['project']
-    print(json.dumps(itemPageScrape.crawlPage(project_url)))
+# Pressing load more to load at least 300 cards
+load_more_button = driver.find_element_by_css_selector('.bttn-medium')
+for i in range(LOAD_MORE_COUNT):
+    load_more_button.click()
     time.sleep(5)
 
+project_cards = driver.find_elements_by_css_selector(".grid-col-4-lg")
+
+# for project in project_cards:
+#     print(json.dumps(itemPageScrape.crawlPage(project_url)))
+#     time.sleep(5)
 
 
-# infoText = soup.findAll("table", {"class": "the class"})
