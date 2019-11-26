@@ -1,7 +1,8 @@
 from html.parser import HTMLParser
 import urllib.request as urllib2
 
-fields = {"creator": "",
+fields = {"ID": "",
+          "creator": "",
           "title": "",
           "text": "",
           "dollarsPledged": "",
@@ -10,7 +11,8 @@ fields = {"creator": "",
           "daysToGo": "",
           "allOrNothing": False}
 
-def reset_fields():
+def reset_fields(ID):
+    fields["ID"] = str(ID)
     fields["creator"] = ""
     fields["title"] = ""
     fields["text"] = ""
@@ -72,8 +74,8 @@ class MyHTMLParser(HTMLParser):
         self.lookingFor = ""
 
 
-def crawlPage(url):
-    reset_fields()
+def crawlPage(url, ID):
+    reset_fields(ID)
     parser = MyHTMLParser()
     html_page = urllib2.urlopen(url)
     parser.feed(str(html_page.read()))
