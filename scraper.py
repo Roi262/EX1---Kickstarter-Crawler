@@ -27,10 +27,14 @@ for i in range(LOAD_MORE_COUNT):
     load_more_button.click()
     time.sleep(5)
 
-project_cards = driver.find_elements_by_css_selector(".grid-col-4-lg")
+# project_cards = driver.find_elements_by_css_selector(".grid-col-4-lg")
 
-# for project in project_cards:
-#     print(json.dumps(itemPageScrape.crawlPage(project_url)))
-#     time.sleep(5)
+project_cards = driver.find_elements_by_class_name('js-track-project-card')
+child_nodes = [elem.find_element_by_class_name("soft-black.mb3") for elem in project_cards]
+project_urls = [child.get_attribute('href') for child in child_nodes]
+
+for project_url in project_urls:
+    print(json.dumps(itemPageScrape.crawlPage(project_url)))
+    time.sleep(5)
 
 
